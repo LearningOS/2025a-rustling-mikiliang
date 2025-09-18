@@ -3,6 +3,7 @@
 //! You should modify this file to make both exercises pass.
 
 fn main() {
+    println!("cargo:rustc-env=TEST_FOO=10");
     // In tests7, we should set up an environment variable
     // called `TEST_FOO`. Print in the standard output to let
     // Cargo do it.
