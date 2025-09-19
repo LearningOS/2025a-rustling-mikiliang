@@ -3,7 +3,7 @@
 	This problem requires you to implement a basic interface for a binary tree
 */
 
-//I AM NOT DONE
+
 use std::cmp::Ordering;
 use std::fmt::Debug;
 
@@ -50,13 +50,32 @@ where
 
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
-        //TODO
+        match self.root {
+            Some(ref mut node) => {
+                node.insert(value);
+            }
+            None => {
+                self.root = Some(Box::new(TreeNode::new(value)));
+            }
+        }
     }
 
     // Search for a value in the BST
     fn search(&self, value: T) -> bool {
-        //TODO
-        true
+        self.search_recursive(&self.root, value)
+    }
+
+    fn search_recursive(&self, node: &Option<Box<TreeNode<T>>>, value: T) -> bool {
+        match node {
+            Some(n) => {
+                match value.cmp(&n.value) {
+                    Ordering::Equal => true,
+                    Ordering::Less => self.search_recursive(&n.left, value),
+                    Ordering::Greater => self.search_recursive(&n.right, value),
+                }
+            }
+            None => false,
+        }
     }
 }
 
@@ -66,7 +85,32 @@ where
 {
     // Insert a node into the tree
     fn insert(&mut self, value: T) {
-        //TODO
+        match value.cmp(&self.value){
+            Ordering::Less => {
+                match self.left {
+                    Some(ref mut left_node) => {
+                        left_node.insert(value);
+                    }
+                    None => {
+                        self.left = Some(Box::new(TreeNode::new(value)));
+                    }
+                }
+            }
+            Ordering::Greater => {
+                match self.right {
+                    Some(ref mut right_node) => {
+                        right_node.insert(value);
+                    }
+                    None => {
+                        self.right = Some(Box::new(TreeNode::new(value)));
+                    }
+                }
+            }
+            Ordering::Equal => {
+                // 如果值相等，不插入重复值（根据测试要求）
+                // 保持现有节点不变
+            }
+        }
     }
 }
 
