@@ -7,9 +7,10 @@
 
 fn main() {
     let mut res = 42;
-    let option = Some(12);
-    while let Some(x) = option{
-        res +=x;
+    let mut option = Some(12);  // 将 option 声明为可变
+    while let Some(x) = option {
+        res += x;
+        option = None;  // 在循环中将 option 设为 None 来退出循环
     }
-    println!("{}", res);
+    println!("{}", res);  // 输出: 54
 }
