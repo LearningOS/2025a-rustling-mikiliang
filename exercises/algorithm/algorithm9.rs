@@ -2,7 +2,7 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
+
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -37,7 +37,12 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        // 将新元素添加到数组末尾
+        self.items.push(value);
+        self.count += 1;
+
+        // 向上调整堆，维持堆的性质
+        self.heapify_up(self.count);
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -57,8 +62,57 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        // 如果没有子节点，返回当前索引
+        if !self.children_present(idx) {
+            return idx;
+        }
+
+        let left = self.left_child_idx(idx);
+        let right = self.right_child_idx(idx);
+
+        // 只有左子节点的情况
+        if right > self.count {
+            return left;
+        }
+
+        // 有左右两个子节点，根据比较器选择合适的子节点
+        // 这里的"smallest"是相对于比较器而言的
+        if (self.comparator)(&self.items[left], &self.items[right]) {
+            left
+        } else {
+            right
+        }
+    }
+    // 向上调整堆（用于插入操作）
+    fn heapify_up(&mut self, mut idx: usize) {
+        while idx > 1 {
+            let parent = self.parent_idx(idx);
+
+            // 如果当前节点不满足向上调整的条件，停止
+            if !(self.comparator)(&self.items[idx], &self.items[parent]) {
+                break;
+            }
+
+            // 交换当前节点和父节点
+            self.items.swap(idx, parent);
+            idx = parent;
+        }
+    }
+
+    // 向下调整堆（用于删除操作）
+    fn heapify_down(&mut self, mut idx: usize) {
+        while self.children_present(idx) {
+            let target_child = self.smallest_child_idx(idx);
+
+            // 如果当前节点已经满足堆的性质，停止调整
+            if !(self.comparator)(&self.items[target_child], &self.items[idx]) {
+                break;
+            }
+
+            // 交换当前节点和目标子节点
+            self.items.swap(idx, target_child);
+            idx = target_child;
+        }
     }
 }
 
@@ -84,9 +138,31 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        if self.is_empty() {
+            return None;
+        }
+
+        // 取出堆顶元素（根节点，位于索引1）
+        let root = std::mem::replace(&mut self.items[1], T::default());
+
+        // 如果堆中只有一个元素
+        if self.count == 1 {
+            self.count = 0;
+            self.items.pop(); // 移除最后一个元素
+            return Some(root);
+        }
+
+        // 将最后一个元素移到根节点位置
+        let last = self.items.pop().unwrap();
+        self.items[1] = last;
+        self.count -= 1;
+
+        // 向下调整堆，维持堆的性质
+        self.heapify_down(1);
+
+        Some(root)
     }
+
 }
 
 pub struct MinHeap;
